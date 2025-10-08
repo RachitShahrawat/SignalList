@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Control, Controller, FieldError } from 'react-hook-form';
+import type { Control, FieldError } from 'react-hook-form';
+import  { Controller } from 'react-hook-form';
 import {
     Popover,
     PopoverContent,
