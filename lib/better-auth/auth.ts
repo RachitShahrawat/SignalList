@@ -1,34 +1,43 @@
-import { betterAuth } from "better-auth";
-import { mongodbAdapter} from "better-auth/adapters/mongodb";
-import { connectToDatabase} from "@/database/mongoose";
-import { nextCookies} from "better-auth/next-js";
+'use server';
 
-let authInstance: ReturnType<typeof betterAuth> | null = null;
+import {auth} from "@/lib/better-auth/auth";
+import {inngest} from "@/lib/inngest/client";
+import {headers} from "next/headers";
 
-export const getAuth = async () => {
-    if(authInstance) return authInstance;
+export const signUpWithEmail = async ({ email, password, fullName, country, investmentGoals, riskTolerance, preferredIndustry }: SignUpFormData) => {
+    try {
+        const response = await auth.api.signUpEmail({ body: { email, password, name: fullName } })
 
-    const mongoose = await connectToDatabase();
-    const db = mongoose.connection.db;
+        if(response) {
+            await inngest.send({
+                name: 'app/user.created',
+                data: { email, name: fullName, country, investmentGoals, riskTolerance, preferredIndustry }
+            })
+        }
 
-    if(!db) throw new Error('MongoDB connection not found');
-
-    authInstance = betterAuth({
-        database: mongodbAdapter(db as any),
-        secret: process.env.BETTER_AUTH_SECRET,
-        baseURL: process.env.BETTER_AUTH_URL,
-        emailAndPassword: {
-            enabled: true,
-            disableSignUp: false,
-            requireEmailVerification: false,
-            minPasswordLength: 8,
-            maxPasswordLength: 128,
-            autoSignIn: true,
-        },
-        plugins: [nextCookies()],
-    });
-
-    return authInstance;
+        return { success: true, data: response }
+    } catch (e) {
+        console.log('Sign up failed', e)
+        return { success: false, error: 'Sign up failed' }
+    }
 }
 
-export const auth = await getAuth();
+export const signInWithEmail = async ({ email, password }: SignInFormData) => {
+    try {
+        const response = await auth.api.signInEmail({ body: { email, password } })
+
+        return { success: true, data: response }
+    } catch (e) {
+        console.log('Sign in failed', e)
+        return { success: false, error: 'Sign in failed' }
+    }
+}
+
+export const signOut = async () => {
+    try {
+        await auth.api.signOut({ headers: await headers() });
+    } catch (e) {
+        console.log('Sign out failed', e)
+        return { success: false, error: 'Sign out failed' }
+    }
+}
