@@ -45,8 +45,8 @@ Follow these instructions to set up the project on your local machine.
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/](https://github.com/)[YOUR_GITHUB_USERNAME]/[YOUR_REPO_NAME].git
-    cd [YOUR_REPO_NAME]
+  git clone https://github.com/RachitShahrawat/SignalList.git
+  cd SignalList
     ```
 
 2.  **Install dependencies:**
