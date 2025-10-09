@@ -71,6 +71,7 @@ declare global {
         id: string;
         name: string;
         email: string;
+         image?: string;
     };
 
     type Stock = {
@@ -146,6 +147,7 @@ declare global {
         changeFormatted?: string;
         marketCap?: string;
         peRatio?: string;
+        changeColorClass?: string;
     };
 
     type AlertsListProps = {

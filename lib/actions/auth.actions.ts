@@ -6,9 +6,19 @@ import {headers} from "next/headers";
 
 export const signUpWithEmail = async ({ email, password, fullName, country, investmentGoals, riskTolerance, preferredIndustry }: SignUpFormData) => {
     try {
-        const response = await auth.api.signUpEmail({ body: { email, password, name: fullName } })
+        // Generate a unique avatar URL based on the user's name
+        const avatarUrl = `https://api.dicebear.com/8.x/lorelei/svg?seed=${encodeURIComponent(fullName)}`;
 
-        if(response) {
+        const response = await auth.api.signUpEmail({ 
+            body: { 
+                email, 
+                password, 
+                name: fullName,
+                 image: avatarUrl
+            } 
+        })
+
+        if (response) {
             await inngest.send({
                 name: 'app/user.created',
                 data: { email, name: fullName, country, investmentGoals, riskTolerance, preferredIndustry }
