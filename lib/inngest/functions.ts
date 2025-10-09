@@ -6,6 +6,13 @@ import { getWatchlistSymbolsByEmail } from "@/lib/actions/watchlist.actions";
 import { getNews } from "@/lib/actions/finnhub.actions";
 import { getFormattedTodayDate } from "@/lib/utils";
 
+// Define UserForNewsEmail type if not imported from elsewhere
+type UserForNewsEmail = {
+    email: string;
+    name?: string;
+    // Add other properties as needed
+};
+
 export const sendSignUpEmail = inngest.createFunction(
     { id: 'sign-up-email' },
     { event: 'app/user.created'},
@@ -83,7 +90,7 @@ export const sendDailyNewsSummary = inngest.createFunction(
         // Step #3: (placeholder) Summarize news via AI
         const userNewsSummaries: { user: UserForNewsEmail; newsContent: string | null }[] = [];
 
-        for (const { user, articles } of results) {
+        for (const { user, articles } of results as Array<{ user: UserForNewsEmail; articles: MarketNewsArticle[] }>) {
                 try {
                     const prompt = NEWS_SUMMARY_EMAIL_PROMPT.replace('{{newsData}}', JSON.stringify(articles, null, 2));
 
